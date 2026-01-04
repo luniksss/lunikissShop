@@ -19,3 +19,7 @@ func (f *ServiceFactory) NewProductService() *service.ProductService {
 func (f *ServiceFactory) NewSalesOutletService() *service.SalesOutletService {
 	return service.NewSalesOutletService(*f.repoFactory.NewSalesOutletRepository(), *f.repoFactory.NewProductRepository())
 }
+
+func (f *ServiceFactory) NewOrderService(salesOutletService service.SalesOutletService) *service.OrderService {
+	return service.NewOrderService(*f.repoFactory.NewOrderRepository(), salesOutletService)
+}
