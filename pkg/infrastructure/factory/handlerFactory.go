@@ -1,6 +1,9 @@
 package factory
 
-import "lunikissShop/pkg/infrastructure/http/handler"
+import (
+	"lunikissShop/pkg/domain/service"
+	"lunikissShop/pkg/infrastructure/http/handler"
+)
 
 type HandlerFactory struct {
 	serviceFactory *ServiceFactory
@@ -16,4 +19,8 @@ func (f *HandlerFactory) ProductHandlers() *handler.ProductHandler {
 
 func (f *HandlerFactory) SalesOutletHandlers() *handler.SalesOutletHandler {
 	return handler.NewSalesOutletHandler(f.serviceFactory.NewSalesOutletService())
+}
+
+func (f *HandlerFactory) OrderHandlers(salesOutletService service.SalesOutletService) *handler.OrderHandler {
+	return handler.NewOrderHandler(f.serviceFactory.NewOrderService(salesOutletService))
 }
