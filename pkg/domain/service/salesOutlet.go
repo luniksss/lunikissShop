@@ -16,15 +16,15 @@ func NewSalesOutletService(outletRepo repository.SalesOutletRepository, productR
 	return &SalesOutletService{outletRepo, productRepo}
 }
 
-func (s *SalesOutletService) GetAllSalesOutlet(ctx context.Context) ([]model.SalesOutlet, error) {
+func (s SalesOutletService) GetAllSalesOutlet(ctx context.Context) ([]model.SalesOutlet, error) {
 	return s.outletRepo.GetAllSalesOutlet(ctx)
 }
 
-func (s *SalesOutletService) GetSalesOutlet(ctx context.Context, id string) (model.SalesOutlet, error) {
+func (s SalesOutletService) GetSalesOutlet(ctx context.Context, id string) (model.SalesOutlet, error) {
 	return s.findOutlet(ctx, id)
 }
 
-func (s *SalesOutletService) AddSalesOutlet(ctx context.Context, address string) error {
+func (s SalesOutletService) AddSalesOutlet(ctx context.Context, address string) error {
 	salesOutlet, err := s.findOutletByName(ctx, address)
 	if err != nil {
 		return err
@@ -36,7 +36,7 @@ func (s *SalesOutletService) AddSalesOutlet(ctx context.Context, address string)
 	return s.outletRepo.AddSalesOutlet(ctx, address)
 }
 
-func (s *SalesOutletService) UpdateSalesOutlet(ctx context.Context, salesOutletID, address string) error {
+func (s SalesOutletService) UpdateSalesOutlet(ctx context.Context, salesOutletID, address string) error {
 	salesOutlet, err := s.findOutlet(ctx, salesOutletID)
 	if err != nil {
 		return err
@@ -48,7 +48,7 @@ func (s *SalesOutletService) UpdateSalesOutlet(ctx context.Context, salesOutletI
 	return s.outletRepo.UpdateSalesOutlet(ctx, salesOutletID, address)
 }
 
-func (s *SalesOutletService) DeleteSalesOutlet(ctx context.Context, salesOutletID string) error {
+func (s SalesOutletService) DeleteSalesOutlet(ctx context.Context, salesOutletID string) error {
 	salesOutlet, err := s.findOutlet(ctx, salesOutletID)
 	if err != nil {
 		return err
@@ -60,7 +60,7 @@ func (s *SalesOutletService) DeleteSalesOutlet(ctx context.Context, salesOutletI
 	return s.outletRepo.DeleteSalesOutlet(ctx, salesOutletID)
 }
 
-func (s *SalesOutletService) GetAllSalesOutletProducts(ctx context.Context, salesOutletID string) ([]model.StockItem, error) {
+func (s SalesOutletService) GetAllSalesOutletProducts(ctx context.Context, salesOutletID string) ([]model.StockItem, error) {
 	_, err := s.findOutlet(ctx, salesOutletID)
 	if err != nil {
 		return []model.StockItem{}, err
@@ -69,11 +69,11 @@ func (s *SalesOutletService) GetAllSalesOutletProducts(ctx context.Context, sale
 	return s.outletRepo.GetAllSalesOutletProducts(ctx, salesOutletID)
 }
 
-func (s *SalesOutletService) GetProductStock(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error) {
+func (s SalesOutletService) GetProductStock(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error) {
 	return s.isStockItemExists(ctx, salesOutletID, productID)
 }
 
-func (s *SalesOutletService) AddStockItem(ctx context.Context, stockItem *model.StockItem) error {
+func (s SalesOutletService) AddStockItem(ctx context.Context, stockItem *model.StockItem) error {
 	stockProducts, err := s.isStockItemExists(ctx, stockItem.SalesOutletID, stockItem.Product.ID)
 	if err != nil {
 		return err
@@ -89,7 +89,7 @@ func (s *SalesOutletService) AddStockItem(ctx context.Context, stockItem *model.
 	return s.outletRepo.AddStockItem(ctx, stockItem)
 }
 
-func (s *SalesOutletService) UpdateStockAmount(ctx context.Context, salesOutletID, productID string, amount, size int) error {
+func (s SalesOutletService) UpdateStockAmount(ctx context.Context, salesOutletID, productID string, amount, size int) error {
 	stockProducts, err := s.isStockItemExists(ctx, salesOutletID, productID)
 	if err != nil {
 		return err
@@ -101,7 +101,7 @@ func (s *SalesOutletService) UpdateStockAmount(ctx context.Context, salesOutletI
 	return s.outletRepo.UpdateStockAmount(ctx, salesOutletID, productID, amount, size)
 }
 
-func (s *SalesOutletService) DeleteStockItem(ctx context.Context, salesOutletID, productID string) error {
+func (s SalesOutletService) DeleteStockItem(ctx context.Context, salesOutletID, productID string) error {
 	stockProducts, err := s.isStockItemExists(ctx, salesOutletID, productID)
 	if err != nil {
 		return err
@@ -113,7 +113,7 @@ func (s *SalesOutletService) DeleteStockItem(ctx context.Context, salesOutletID,
 	return s.outletRepo.DeleteStockItem(ctx, salesOutletID, productID)
 }
 
-func (s *SalesOutletService) isStockItemExists(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error) {
+func (s SalesOutletService) isStockItemExists(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error) {
 	_, err := s.findOutlet(ctx, salesOutletID)
 	if err != nil {
 		return []model.StockItem{}, err
@@ -131,7 +131,7 @@ func (s *SalesOutletService) isStockItemExists(ctx context.Context, salesOutletI
 	return stockProducts, nil
 }
 
-func (s *SalesOutletService) findOutlet(ctx context.Context, salesOutletID string) (model.SalesOutlet, error) {
+func (s SalesOutletService) findOutlet(ctx context.Context, salesOutletID string) (model.SalesOutlet, error) {
 	outlet, err := s.outletRepo.GetSalesOutletByID(ctx, salesOutletID)
 	if err != nil {
 		return model.SalesOutlet{}, err
@@ -142,7 +142,7 @@ func (s *SalesOutletService) findOutlet(ctx context.Context, salesOutletID strin
 	return outlet, nil
 }
 
-func (s *SalesOutletService) findOutletByName(ctx context.Context, address string) (model.SalesOutlet, error) {
+func (s SalesOutletService) findOutletByName(ctx context.Context, address string) (model.SalesOutlet, error) {
 	outlet, err := s.outletRepo.GetSalesOutletByName(ctx, address)
 	if err != nil {
 		return model.SalesOutlet{}, err
@@ -153,7 +153,7 @@ func (s *SalesOutletService) findOutletByName(ctx context.Context, address strin
 	return outlet, nil
 }
 
-func (s *SalesOutletService) findProduct(ctx context.Context, productID string) (model.Product, error) {
+func (s SalesOutletService) findProduct(ctx context.Context, productID string) (model.Product, error) {
 	product, err := s.productRepo.GetProductByID(ctx, productID)
 	if err != nil {
 		return model.Product{}, err
