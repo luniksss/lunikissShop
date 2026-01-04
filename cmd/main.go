@@ -49,4 +49,13 @@ func setupRoutes(app *app.App) {
 	http.HandleFunc("POST /stock/add", app.SalesOutletHandler.AddStockItem)
 	http.HandleFunc("POST /stock/update/{outletId}/{productId}/{amount}/{size}", app.SalesOutletHandler.UpdateStockItem)
 	http.HandleFunc("DELETE /stock/delete/{outletId}/{productId}", app.SalesOutletHandler.DeleteStockItem)
+
+	http.HandleFunc("GET /orders", app.OrderHandler.ListAllOrders)
+	http.HandleFunc("GET /orders/{orderID}", app.OrderHandler.GetOrderInfo)
+	http.HandleFunc("GET /users/{userID}/orders", app.OrderHandler.ListAllUserOrders)
+	http.HandleFunc("GET /sales-outlets/{salesOutletID}/orders", app.OrderHandler.ListOrdersBySalesOutlet)
+	http.HandleFunc("POST /orders", app.OrderHandler.CreateOrder)
+	http.HandleFunc("PATCH /orders/{orderID}/status", app.OrderHandler.UpdateOrderStatus)
+	http.HandleFunc("DELETE /orders/{orderID}", app.OrderHandler.DeleteOrder)
+	http.HandleFunc("DELETE /order-items/{orderItemID}", app.OrderHandler.DeleteOrderItem)
 }
