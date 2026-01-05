@@ -24,3 +24,7 @@ func (f *RepositoryFactory) NewSalesOutletRepository() *repository.SalesOutletRe
 func (f *RepositoryFactory) NewOrderRepository() *repository.OrderRepository {
 	return repository.NewOrderRepository(f.db)
 }
+
+func (f *RepositoryFactory) NewUserRepository() *repository.UserRepository {
+	return repository.NewUserRepository(f.db)
+}

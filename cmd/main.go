@@ -58,4 +58,13 @@ func setupRoutes(app *app.App) {
 	http.HandleFunc("PATCH /orders/{orderID}/status", app.OrderHandler.UpdateOrderStatus)
 	http.HandleFunc("DELETE /orders/{orderID}", app.OrderHandler.DeleteOrder)
 	http.HandleFunc("DELETE /order-items/{orderItemID}", app.OrderHandler.DeleteOrderItem)
+
+	http.HandleFunc("GET /api/v1/users", app.UserHandler.ListAllUsers)
+	http.HandleFunc("GET /api/v1/users/{id}", app.UserHandler.GetUserByID)
+	http.HandleFunc("POST /api/v1/users/by-email", app.UserHandler.GetUserByEmail)
+
+	http.HandleFunc("POST /api/v1/users", app.UserHandler.AddUser)
+	http.HandleFunc("PUT /api/v1/users", app.UserHandler.UpdateUser)
+	http.HandleFunc("PATCH /api/v1/users/{id}/role", app.UserHandler.UpdateUserRole)
+	http.HandleFunc("DELETE /api/v1/users/{id}", app.UserHandler.DeleteUser)
 }

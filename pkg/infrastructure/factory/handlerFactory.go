@@ -24,3 +24,7 @@ func (f *HandlerFactory) SalesOutletHandlers() *handler.SalesOutletHandler {
 func (f *HandlerFactory) OrderHandlers(salesOutletService service.SalesOutletService) *handler.OrderHandler {
 	return handler.NewOrderHandler(f.serviceFactory.NewOrderService(salesOutletService))
 }
+
+func (f *HandlerFactory) UserHandlers() *handler.UserHandler {
+	return handler.NewUserHandler(f.serviceFactory.NewUserService())
+}
