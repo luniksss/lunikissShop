@@ -2,9 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"lunikissShop/pkg/domain/model"
 	"lunikissShop/pkg/domain/service"
-	"net/http"
+	"lunikissShop/pkg/middleware"
 )
 
 type ProductHandler struct {
@@ -45,6 +47,17 @@ func (h *ProductHandler) GetProductByID(w http.ResponseWriter, r *http.Request) 
 func (h *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
+
 	var product model.Product
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -62,6 +75,17 @@ func (h *ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
+
 	var product model.Product
 	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -78,6 +102,17 @@ func (h *ProductHandler) UpdateProduct(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
 
 	productID := r.PathValue("id")
 	if err := h.productService.DeleteProduct(ctx, productID); err != nil {

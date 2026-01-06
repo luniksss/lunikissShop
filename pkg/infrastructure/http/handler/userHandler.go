@@ -2,9 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"lunikissShop/pkg/domain/model"
 	"lunikissShop/pkg/domain/service"
-	"net/http"
+	"lunikissShop/pkg/middleware"
 )
 
 type UserHandler struct {
@@ -17,6 +19,17 @@ func NewUserHandler(userService *service.UserService) *UserHandler {
 
 func (h *UserHandler) ListAllUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if !model.Role(user.Role).HasPermission(model.RoleAdmin) {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
 
 	users, err := h.userService.ListAllUsers(ctx)
 	if err != nil {
@@ -45,7 +58,6 @@ func (h *UserHandler) GetUserByID(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) GetUserByEmail(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// Для POST запроса получаем email из тела запроса
 	var request struct {
 		Email string `json:"email"`
 	}
@@ -80,16 +92,15 @@ func (h *UserHandler) AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.userService.AddUser(ctx, &userInfo); err != nil {
-		// Проверяем конкретные ошибки для возврата соответствующих статусов
 		if err.Error() == "user already exists" {
-			http.Error(w, err.Error(), http.StatusConflict) // 409 Conflict
+			http.Error(w, err.Error(), http.StatusConflict)
 		} else {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		return
 	}
 
-	w.WriteHeader(http.StatusCreated) // 201 Created
+	w.WriteHeader(http.StatusCreated)
 }
 
 func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
@@ -116,6 +127,17 @@ func (h *UserHandler) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (h *UserHandler) UpdateUserRole(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	userID := r.PathValue("id")
+
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if !model.Role(user.Role).HasPermission(model.RoleAdmin) {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
 
 	var request struct {
 		Role string `json:"role"`

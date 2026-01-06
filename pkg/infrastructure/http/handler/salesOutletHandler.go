@@ -3,10 +3,12 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
-	"lunikissShop/pkg/domain/model"
-	"lunikissShop/pkg/domain/service"
 	"net/http"
 	"strconv"
+
+	"lunikissShop/pkg/domain/model"
+	"lunikissShop/pkg/domain/service"
+	"lunikissShop/pkg/middleware"
 )
 
 type SalesOutletHandler struct {
@@ -48,6 +50,17 @@ func (h *SalesOutletHandler) GetSalesOutletByID(w http.ResponseWriter, r *http.R
 func (h *SalesOutletHandler) AddSalesOutlet(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
+
 	var address string
 	if err := json.NewDecoder(r.Body).Decode(&address); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -66,6 +79,17 @@ func (h *SalesOutletHandler) UpdateSalesOutlet(w http.ResponseWriter, r *http.Re
 	ctx := r.Context()
 	salesOutletID := r.PathValue("outletId")
 
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
+
 	var address string
 	if err := json.NewDecoder(r.Body).Decode(&address); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -83,6 +107,17 @@ func (h *SalesOutletHandler) UpdateSalesOutlet(w http.ResponseWriter, r *http.Re
 func (h *SalesOutletHandler) DeleteSalesOutlet(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	salesOutletID := r.PathValue("outletId")
+
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
 
 	if err := h.salesOutletService.DeleteSalesOutlet(ctx, salesOutletID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -124,6 +159,17 @@ func (h *SalesOutletHandler) GetSalesOutletProductsByProductID(w http.ResponseWr
 func (h *SalesOutletHandler) AddStockItem(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin && model.Role(user.Role) != model.RoleSeller {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
+
 	var stockItem model.StockItem
 	if err := json.NewDecoder(r.Body).Decode(&stockItem); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -145,6 +191,17 @@ func (h *SalesOutletHandler) UpdateStockItem(w http.ResponseWriter, r *http.Requ
 	amount, _ := strconv.Atoi(r.PathValue("amount"))
 	size, _ := strconv.Atoi(r.PathValue("size"))
 
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin && model.Role(user.Role) != model.RoleSeller {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
+
 	if err := h.salesOutletService.UpdateStockAmount(ctx, salesOutletID, productID, amount, size); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -157,6 +214,17 @@ func (h *SalesOutletHandler) DeleteStockItem(w http.ResponseWriter, r *http.Requ
 	ctx := r.Context()
 	salesOutletID := r.PathValue("outletId")
 	productID := r.PathValue("productId")
+
+	user, ok := middleware.GetUserFromContext(ctx)
+	if !ok {
+		http.Error(w, "Authentication required", http.StatusUnauthorized)
+		return
+	}
+
+	if model.Role(user.Role) != model.RoleAdmin && model.Role(user.Role) != model.RoleSeller {
+		http.Error(w, "Insufficient permissions", http.StatusForbidden)
+		return
+	}
 
 	if err := h.salesOutletService.DeleteStockItem(ctx, salesOutletID, productID); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
