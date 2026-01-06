@@ -27,3 +27,7 @@ func (f *ServiceFactory) NewOrderService(salesOutletService service.SalesOutletS
 func (f *ServiceFactory) NewUserService() *service.UserService {
 	return service.NewUserService(*f.repoFactory.NewUserRepository())
 }
+
+func (f *ServiceFactory) NewAuthService(userService service.UserService, jwtSecret string) *service.AuthService {
+	return service.NewAuthService(&userService, jwtSecret)
+}

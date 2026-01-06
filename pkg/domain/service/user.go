@@ -28,6 +28,10 @@ func (us UserService) GetUserByEmail(ctx context.Context, userEmail string) (mod
 	return us.userRepo.GetUserByEmail(ctx, userEmail)
 }
 
+func (us UserService) GetUserPassword(ctx context.Context, userID string) (string, error) {
+	return us.userRepo.GetUserPassword(ctx, userID)
+}
+
 func (us UserService) AddUser(ctx context.Context, userInfo *model.UserInfo) error {
 	_, err := us.GetUserByEmail(ctx, userInfo.Email)
 	if err != nil {
@@ -53,6 +57,10 @@ func (us UserService) UpdateUserRole(ctx context.Context, userID string, newUser
 	}
 
 	return us.userRepo.UpdateUserRole(ctx, userID, newUserRole)
+}
+
+func (us UserService) UpdatePassword(ctx context.Context, userID string, newPassword string) error {
+	return us.userRepo.UpdatePassword(ctx, userID, newPassword)
 }
 
 func (us UserService) DeleteUser(ctx context.Context, userID string) error {

@@ -16,11 +16,13 @@ type App struct {
 	SalesOutletService service.SalesOutletService
 	OrderService       service.OrderService
 	UserService        service.UserService
+	AuthService        service.AuthService
 
 	ProductHandler     *handler.ProductHandler
 	SalesOutletHandler *handler.SalesOutletHandler
 	OrderHandler       *handler.OrderHandler
 	UserHandler        *handler.UserHandler
+	AuthHandler        *handler.AuthHandler
 }
 
 func NewApp(db *sql.DB) *App {
@@ -32,11 +34,13 @@ func NewApp(db *sql.DB) *App {
 	salesOutletService := *serviceFactory.NewSalesOutletService()
 	orderService := *serviceFactory.NewOrderService(salesOutletService)
 	userService := *serviceFactory.NewUserService()
+	authService := *serviceFactory.NewAuthService(userService, "")
 
 	productHandler := handlerFactory.ProductHandlers()
 	salesOutletHandler := handlerFactory.SalesOutletHandlers()
 	orderHandler := handlerFactory.OrderHandlers(salesOutletService)
 	userHandler := handlerFactory.UserHandlers()
+	authHandler := handlerFactory.AuthHandlers(userService, "")
 
 	app := &App{
 		RepoFactory:    repoFactory,
@@ -47,11 +51,13 @@ func NewApp(db *sql.DB) *App {
 		SalesOutletService: salesOutletService,
 		OrderService:       orderService,
 		UserService:        userService,
+		AuthService:        authService,
 
 		ProductHandler:     productHandler,
 		SalesOutletHandler: salesOutletHandler,
 		OrderHandler:       orderHandler,
 		UserHandler:        userHandler,
+		AuthHandler:        authHandler,
 	}
 
 	return app

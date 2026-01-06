@@ -28,3 +28,7 @@ func (f *HandlerFactory) OrderHandlers(salesOutletService service.SalesOutletSer
 func (f *HandlerFactory) UserHandlers() *handler.UserHandler {
 	return handler.NewUserHandler(f.serviceFactory.NewUserService())
 }
+
+func (f *HandlerFactory) AuthHandlers(userService service.UserService, jwtSecret string) *handler.AuthHandler {
+	return handler.NewAuthHandler(f.serviceFactory.NewAuthService(userService, jwtSecret))
+}

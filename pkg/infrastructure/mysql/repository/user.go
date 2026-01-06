@@ -94,6 +94,20 @@ func (ur UserRepository) GetUserByEmail(ctx context.Context, userEmail string) (
 	return oi, nil
 }
 
+func (ur UserRepository) GetUserPassword(ctx context.Context, userID string) (string, error) {
+	query := `
+        SELECT password
+        FROM user
+        WHERE id=?
+    `
+	var password string
+	err := ur.db.QueryRowContext(ctx, query, userID).Scan(&password)
+	if err != nil {
+		return "", err
+	}
+	return password, nil
+}
+
 func (ur UserRepository) AddUser(ctx context.Context, userInfo *model.UserInfo) error {
 	query := `INSERT INTO user (name, surname, email, password, role, phone) VALUES (?, ?, ?, ?, ?, ?)`
 	_, err := ur.db.ExecContext(ctx, query, userInfo.Name, userInfo.Surname, userInfo.Email, userInfo.Password, userInfo.Role, userInfo.Phone)
@@ -122,6 +136,19 @@ func (ur UserRepository) UpdateUserRole(ctx context.Context, userID string, newU
 		WHERE id = ?
 	`
 	_, err := ur.db.ExecContext(ctx, query, newUserRole, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (ur UserRepository) UpdatePassword(ctx context.Context, userID string, newPassword string) error {
+	query := `UPDATE user 
+		SET password = ?
+		WHERE id = ?
+	`
+	_, err := ur.db.ExecContext(ctx, query, newPassword, userID)
 	if err != nil {
 		return err
 	}
