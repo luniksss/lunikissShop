@@ -2,6 +2,8 @@ package handler
 
 import (
 	"encoding/json"
+	"io"
+	"log"
 	"net/http"
 
 	"lunikissShop/pkg/domain/model"
@@ -132,8 +134,23 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	bodyBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
 	var orderInfo model.OrderRequestInfo
-	if err := json.NewDecoder(r.Body).Decode(&orderInfo); err != nil {
+	if err := json.Unmarshal(bodyBytes, &orderInfo); err != nil {
+		var raw map[string]interface{}
+		if err2 := json.Unmarshal(bodyBytes, &raw); err2 != nil {
+			log.Printf("Cannot parse as generic map: %v", err2)
+		} else {
+			for k, v := range raw {
+				log.Printf("Key: %s, Type: %T, Value: %v", k, v, v)
+			}
+		}
+
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
 	}

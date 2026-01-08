@@ -10,8 +10,7 @@ import (
 )
 
 type OrderService struct {
-	orderRepo repository.OrderRepository
-	// TODO adapter to user service
+	orderRepo          repository.OrderRepository
 	salesOutletService service.SalesOutletService
 }
 
@@ -23,9 +22,7 @@ func (os OrderService) ListAllOrders(ctx context.Context) ([]model.Order, error)
 	return os.orderRepo.ListOrders(ctx)
 }
 
-func (os OrderService) ListAllUserOrders(ctx context.Context, userID string) ([]model.Order, error) {
-	// TODO check if user with this ID exists
-
+func (os OrderService) ListAllUserOrders(ctx context.Context, userID string) ([]model.OrderResponseInfo, error) {
 	return os.orderRepo.ListUserOrders(ctx, userID)
 }
 
@@ -38,16 +35,22 @@ func (os OrderService) ListOrdersBySalesOutlet(ctx context.Context, salesOutletI
 	return os.orderRepo.ListOrdersBySalesOutlet(ctx, salesOutletID)
 }
 
-func (os OrderService) GetOrderInfo(ctx context.Context, orderID string) ([]model.OrderItem, error) {
+func (os OrderService) GetOrderInfo(ctx context.Context, orderID string) ([]model.OrderItemResponseInfo, error) {
 	return os.orderRepo.GetOrderByID(ctx, orderID)
 }
 
 func (os OrderService) CreateOrder(ctx context.Context, orderInfo model.OrderRequestInfo) error {
 	salesOutlet := os.checkIsSalesOutletExists(ctx, orderInfo.SalesOutletID)
-	user := os.checkIsUserExist(ctx, orderInfo.UserID)
 
-	if !salesOutlet || !user {
+	if !salesOutlet {
 		return errors.New("sales outlet or user does not exist")
+	}
+
+	for _, orderItem := range orderInfo.OrderItems {
+		ok := os.checkIsProductInStock(ctx, orderInfo.SalesOutletID, orderItem.ProductID, orderItem.Size, orderItem.Amount)
+		if !ok {
+			return errors.New("product does not exist in the stock")
+		}
 	}
 
 	return os.orderRepo.CreateOrder(ctx, orderInfo)
@@ -87,14 +90,24 @@ func (os OrderService) checkIsSalesOutletExists(ctx context.Context, salesOutlet
 	return true
 }
 
+func (os OrderService) checkIsProductInStock(ctx context.Context, salesOutletID string, productID string, size int, amount int) bool {
+	stockProducts, err := os.salesOutletService.GetProductStock(ctx, salesOutletID, productID)
+	if err != nil {
+		return false
+	}
+
+	for _, stockItem := range stockProducts {
+		if stockItem.Size == size && stockItem.Amount >= amount {
+			return true
+		}
+	}
+	return false
+}
+
 func (os OrderService) checkIsOrderExist(ctx context.Context, orderID string) bool {
 	_, err := os.orderRepo.GetOrderByID(ctx, orderID)
 	if err != nil {
 		return false
 	}
-	return true
-}
-
-func (os OrderService) checkIsUserExist(ctx context.Context, userID string) bool {
 	return true
 }
