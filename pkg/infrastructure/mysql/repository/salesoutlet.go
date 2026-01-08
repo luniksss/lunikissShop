@@ -74,7 +74,7 @@ func (sor *SalesOutletRepository) GetSalesOutletByName(ctx context.Context, name
 }
 
 func (sor *SalesOutletRepository) AddSalesOutlet(ctx context.Context, address string) error {
-	query := `INSERT INTO sales_outlet(address) VALUE ?`
+	query := `INSERT INTO sales_outlet(address) VALUES (?)`
 	_, err := sor.db.ExecContext(ctx, query, address)
 	if err != nil {
 		return err
@@ -123,24 +123,49 @@ func (sor *SalesOutletRepository) GetAllSalesOutletProducts(ctx context.Context,
 
 func (sor *SalesOutletRepository) GetProductStock(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error) {
 	query := `
- 		SELECT 
-			p.id, p.name, p.description, p.price,
-			pi.image_path, pi.id,
-			s.sales_outlet_id, s.size, s.amount
-		FROM product p
- 		INNER JOIN product_stock s ON p.id = s.product_id
- 		JOIN product_image pi ON p.id = pi.product_id
- 		WHERE pi.product_id = ?
- 		AND s.product_id = ?
- 		ORDER BY p.name
-	`
+        SELECT 
+            p.id, p.name, p.description, p.price,
+            pi.image_path, pi.id,
+            s.sales_outlet_id, s.size, s.amount
+        FROM product p
+        INNER JOIN product_stock s ON p.id = s.product_id
+        LEFT JOIN product_image pi ON p.id = pi.product_id
+        WHERE s.sales_outlet_id = ? AND s.product_id = ?
+        ORDER BY p.name
+    `
 
-	return sor.queryConcreteProducts(ctx, query, salesOutletID, productID)
+	rows, err := sor.db.QueryContext(ctx, query, salesOutletID, productID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var stockItems []model.StockItem
+	count := 0
+	for rows.Next() {
+		var item model.StockItem
+		err := rows.Scan(
+			&item.Product.ID, &item.Product.Name, &item.Product.Description, &item.Product.Price,
+			&item.Product.Image.ImagePath, &item.Product.Image.ID,
+			&item.SalesOutletID, &item.Size, &item.Amount,
+		)
+		if err != nil {
+			return nil, err
+		}
+		stockItems = append(stockItems, item)
+		count++
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return stockItems, nil
 }
 
 func (sor *SalesOutletRepository) AddStockItem(ctx context.Context, stockItem *model.StockItem) error {
-	query := `INSERT INTO product_stock (product_id, size, amount) VALUES (?, ?, ?)`
-	_, err := sor.db.ExecContext(ctx, query, stockItem.Product.ID, stockItem.Size, stockItem.Amount)
+	query := `INSERT INTO product_stock (sales_outlet_id, product_id, size, amount) VALUES (?, ?, ?, ?)`
+	_, err := sor.db.ExecContext(ctx, query, stockItem.SalesOutletID, stockItem.Product.ID, stockItem.Size, stockItem.Amount)
 	if err != nil {
 		return err
 	}
@@ -162,9 +187,15 @@ func (sor *SalesOutletRepository) UpdateStockAmount(ctx context.Context, salesOu
 	return nil
 }
 
-func (sor *SalesOutletRepository) DeleteStockItem(ctx context.Context, salesOutletID, productID string) error {
-	query := `DELETE FROM product_stock WHERE sales_outlet_id = ? AND product_id = ?`
-	_, err := sor.db.ExecContext(ctx, query, salesOutletID, productID)
+func (sor *SalesOutletRepository) DeleteStockItem(ctx context.Context, salesOutletID, productID string, size int) error {
+	query := `
+		DELETE 
+		FROM product_stock 
+	    WHERE sales_outlet_id = ? 
+	    AND product_id = ? 
+	    AND size = ?
+	`
+	_, err := sor.db.ExecContext(ctx, query, salesOutletID, productID, size)
 	if err != nil {
 		return fmt.Errorf("failed to delete product from sales outlet stock: %w", err)
 	}

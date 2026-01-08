@@ -15,5 +15,5 @@ type SalesOutletService interface {
 	GetProductStock(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error)
 	AddStockItem(ctx context.Context, stockItem *model.StockItem) error
 	UpdateStockAmount(ctx context.Context, salesOutletID, productID string, amount, size int) error
-	DeleteStockItem(ctx context.Context, salesOutletID, productID string) error
+	DeleteStockItem(ctx context.Context, salesOutletID, productID string, size int) error
 }

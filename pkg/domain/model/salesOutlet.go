@@ -8,10 +8,10 @@ type SalesOutlet struct {
 }
 
 type StockItem struct {
-	SalesOutletID string `json:"sales_outlet_id"`
-	Product       Product
-	Size          int `json:"size"`
-	Amount        int `json:"amount"`
+	SalesOutletID string  `json:"sales_outlet_id"`
+	Product       Product `json:"product"`
+	Size          int     `json:"size"`
+	Amount        int     `json:"amount"`
 }
 
 type SalesOutletRepository interface {
@@ -25,5 +25,5 @@ type SalesOutletRepository interface {
 	GetProductStock(ctx context.Context, salesOutletID, productID string) ([]StockItem, error)
 	AddStockItem(ctx context.Context, stockItem *StockItem) error
 	UpdateStockAmount(ctx context.Context, salesOutletID, productID string, amount, size int) error
-	DeleteStockItem(ctx context.Context, salesOutletID, productID string) error
+	DeleteStockItem(ctx context.Context, salesOutletID, productID string, size int) error
 }

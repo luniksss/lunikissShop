@@ -27,7 +27,9 @@ func (s SalesOutletService) GetSalesOutlet(ctx context.Context, id string) (mode
 func (s SalesOutletService) AddSalesOutlet(ctx context.Context, address string) error {
 	salesOutlet, err := s.findOutletByName(ctx, address)
 	if err != nil {
-		return err
+		if err.Error() != "sales outlet not found" {
+			return err
+		}
 	}
 	if salesOutlet.Address != "" {
 		return errors.New("sales outlet already exists")
@@ -39,9 +41,11 @@ func (s SalesOutletService) AddSalesOutlet(ctx context.Context, address string) 
 func (s SalesOutletService) UpdateSalesOutlet(ctx context.Context, salesOutletID, address string) error {
 	salesOutlet, err := s.findOutlet(ctx, salesOutletID)
 	if err != nil {
-		return err
+		if err.Error() != "sales outlet not found" {
+			return err
+		}
 	}
-	if salesOutlet.Address != "" {
+	if salesOutlet.Address == "" {
 		return errors.New("sales outlet does not exists")
 	}
 
@@ -51,9 +55,11 @@ func (s SalesOutletService) UpdateSalesOutlet(ctx context.Context, salesOutletID
 func (s SalesOutletService) DeleteSalesOutlet(ctx context.Context, salesOutletID string) error {
 	salesOutlet, err := s.findOutlet(ctx, salesOutletID)
 	if err != nil {
-		return err
+		if err.Error() != "sales outlet not found" {
+			return err
+		}
 	}
-	if salesOutlet.Address != "" {
+	if salesOutlet.Address == "" {
 		return errors.New("sales outlet does not exists")
 	}
 
@@ -101,7 +107,7 @@ func (s SalesOutletService) UpdateStockAmount(ctx context.Context, salesOutletID
 	return s.outletRepo.UpdateStockAmount(ctx, salesOutletID, productID, amount, size)
 }
 
-func (s SalesOutletService) DeleteStockItem(ctx context.Context, salesOutletID, productID string) error {
+func (s SalesOutletService) DeleteStockItem(ctx context.Context, salesOutletID, productID string, size int) error {
 	stockProducts, err := s.isStockItemExists(ctx, salesOutletID, productID)
 	if err != nil {
 		return err
@@ -110,7 +116,7 @@ func (s SalesOutletService) DeleteStockItem(ctx context.Context, salesOutletID, 
 		return errors.New("product stock does not exists")
 	}
 
-	return s.outletRepo.DeleteStockItem(ctx, salesOutletID, productID)
+	return s.outletRepo.DeleteStockItem(ctx, salesOutletID, productID, size)
 }
 
 func (s SalesOutletService) isStockItemExists(ctx context.Context, salesOutletID, productID string) ([]model.StockItem, error) {
@@ -124,7 +130,7 @@ func (s SalesOutletService) isStockItemExists(ctx context.Context, salesOutletID
 		return []model.StockItem{}, err
 	}
 
-	stockProducts, err := s.GetProductStock(ctx, salesOutletID, productID)
+	stockProducts, err := s.outletRepo.GetProductStock(ctx, salesOutletID, productID)
 	if err != nil {
 		return []model.StockItem{}, err
 	}

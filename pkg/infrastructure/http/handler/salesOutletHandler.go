@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -28,7 +27,6 @@ func (h *SalesOutletHandler) GetSalesOutlet(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	fmt.Println(products)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(products)
 }
@@ -214,6 +212,7 @@ func (h *SalesOutletHandler) DeleteStockItem(w http.ResponseWriter, r *http.Requ
 	ctx := r.Context()
 	salesOutletID := r.PathValue("outletId")
 	productID := r.PathValue("productId")
+	size, _ := strconv.Atoi(r.PathValue("size"))
 
 	user, ok := middleware.GetUserFromContext(ctx)
 	if !ok {
@@ -226,7 +225,7 @@ func (h *SalesOutletHandler) DeleteStockItem(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	if err := h.salesOutletService.DeleteStockItem(ctx, salesOutletID, productID); err != nil {
+	if err := h.salesOutletService.DeleteStockItem(ctx, salesOutletID, productID, size); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
