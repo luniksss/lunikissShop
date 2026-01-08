@@ -1,0 +1,240 @@
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  font-family: 'Rubik';
+}
+
+.title {
+  font-size: 20px;
+  color: #333;
+  margin: 0;
+}
+
+.countText {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.productsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 25px;
+}
+
+.inStockCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Rubik';
+}
+
+.inStockCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #800020;
+}
+
+.outOfStockCard {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background-color: white;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Rubik';
+  opacity: 0.6;
+}
+
+.outOfStockCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  border-color: #800020;
+  opacity: 0.6;
+}
+
+.productImage {
+  position: relative;
+  height: 300px;
+  overflow: hidden;
+  background-color: #f8f8f8;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.image:hover {
+  transform: scale(1.05);
+}
+
+.placeholderImage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f0f0f0;
+}
+
+.placeholderText {
+  color: #999;
+  font-family: 'Rubik';
+  font-size: 14px;
+}
+
+.inStockBadge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: rgba(254, 223, 150, 0.9);
+  color: black;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.productInfo {
+  padding: 15px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.productName {
+  margin: 0 0 10px 5px;
+  font-size: 16px;
+  color: #333;
+  font-weight: bold;
+  line-height: 1.3;
+}
+
+.detailsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0 8px 5px;
+  flex-wrap: wrap;
+}
+
+.price {
+  font-size: 18px;
+  color: #800020;
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.sizesText {
+  font-size: 13px;
+  color: #666;
+  background-color: #f5f5f5;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.stockInfo {
+  margin: 0 0 10px 0;
+}
+
+.inStockText {
+  color: #000000;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.outOfStockText {
+  color: #F44336;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #800020;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loadingText {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.errorText {
+  color: #F44336;
+  font-size: 16px;
+  margin-bottom: 20px;
+}
+
+.retryButton {
+  padding: 10px 25px;
+  background-color: #800020;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.retryButton:hover {
+  background-color: #600018;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Rubik';
+}
+
+.emptyText {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}

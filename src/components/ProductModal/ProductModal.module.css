@@ -1,0 +1,312 @@
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.closeButton {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    background-color: rgba(128, 0, 32, 0.9);
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: background-color 0.3s ease;
+}
+
+.closeButton:hover {
+    background-color: rgb(82, 1, 21);
+}
+
+.modalBody {
+    display: flex;
+    flex-direction: row;
+}
+
+.imageSection {
+    flex: 1;
+    min-height: 400px;
+    overflow: hidden;
+    border-top-left-radius: 12px;
+    border-bottom-left-radius: 12px;
+    background-color: #f5f5f5;
+    text-align: center;
+}
+
+.mainImage {
+    width: 95%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.placeholderImage {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 18px;
+}
+
+.infoSection {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Rubik';
+}
+
+.productName {
+    margin: 0 0 20px 0;
+    font-size: 28px;
+    color: #333;
+    font-weight: bold;
+}
+
+.priceSection {
+    display: flex;
+    align-items: center;
+    padding-bottom: 5px;
+}
+
+.priceLabel {
+    font-size: 18px;
+    color: #666;
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+.price {
+    font-size: 24px;
+    color: #800020;
+    font-weight: bold;
+}
+
+.delimiterImage {
+    height: 30px;
+    width: 100%;
+    background-image: url('../../../public/icons/black-lace.png');
+    background-repeat: repeat-x;
+    background-size: auto 100%;
+    background-position: left center;
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.descriptionSection {
+    margin-bottom: 25px;
+}
+
+.sectionTitle {
+    font-size: 18px;
+    color: #800020;
+    margin: 0 0 15px 0;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 16px;
+    color: #555;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.sizesSection {
+    margin-bottom: 25px;
+}
+
+.noSizesText {
+    font-size: 16px;
+    color: #999;
+    font-style: italic;
+    margin: 0;
+}
+
+.sizesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sizeText {
+    font-family: 'Rubik';
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.sizeAmount {
+    font-family: 'Rubik';
+    font-size: 12px;
+    color: #666;
+}
+
+.stockSection {
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.selectedSizeInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.selectedSizeLabel {
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+}
+
+.selectedSizeValue {
+    font-size: 20px;
+    color: #800020;
+    font-weight: bold;
+}
+
+.actionSection {
+    text-align: center;
+    padding-top: 20px;
+    border-top-width: 2px;
+    border-top-style: solid;
+    border-top-color: #eee;
+}
+
+.bookButton {
+    padding: 16px 40px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-family: 'Rubik';
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.bookButtonActive {
+    background-color: #800020;
+    cursor: pointer;
+}
+
+.bookButtonActive:hover {
+    background-color: #600018;
+}
+
+.bookButtonDisabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.bookingInfo {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    font-style: italic;
+    line-height: 1.4;
+}
+
+.sizeButton {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    border-width: 2px;
+    border-style: solid;
+    border-radius: 8px;
+    padding: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.sizeButtonDefault {
+    border-color: #ddd;
+    background-color: white;
+}
+
+.sizeButtonHover {
+    border-color: #800020;
+    transform: translateY(-2px);
+}
+
+.sizeButtonSelected {
+    border-color: #800020;
+    background-color: rgba(128, 0, 32, 0.1);
+    transform: translateY(-2px);
+}
+
+.sizeButtonDisabled {
+    border-color: #ddd;
+    background-color: white;
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.bookButtonActive {
+    background-color: #800020 !important;
+    cursor: pointer !important;
+}
+
+.bookButtonActive:hover:not(:disabled) {
+    background-color: #600018 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(128, 0, 32, 0.3);
+}
+
+.bookButtonDisabled {
+    background-color: #ccc !important;
+    cursor: not-allowed !important;
+}
+
+@media (max-width: 768px) {
+    .modalBody {
+        flex-direction: column;
+    }
+
+    .imageSection {
+        border-top-right-radius: 12px;
+        border-bottom-left-radius: 0;
+        min-height: 300px;
+    }
+
+    .productName {
+        font-size: 24px;
+    }
+
+    .price {
+        font-size: 28px;
+    }
+}
