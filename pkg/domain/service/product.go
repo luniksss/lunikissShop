@@ -25,15 +25,18 @@ func (ps *ProductService) GetProduct(ctx context.Context, productID string) (mod
 }
 
 func (ps *ProductService) AddProduct(ctx context.Context, product model.Product) error {
-	product, err := ps.productRepo.GetProductByName(ctx, product.Name)
-	if err != nil || product.ID != "" {
+	existingProduct, err := ps.productRepo.GetProductByName(ctx, product.Name)
+
+	if err == nil && existingProduct.ID != "" {
 		return errors.New("product with this name already exists")
 	}
 
-	err = ps.productRepo.AddProduct(ctx, &product)
+	productId, err := ps.productRepo.AddProduct(ctx, &product)
 	if err != nil {
 		return err
 	}
+
+	product.Image.ProductID = productId
 	err = ps.productRepo.AddProductImage(ctx, &product.Image)
 	if err != nil {
 		return err

@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"strconv"
+
 	"lunikissShop/pkg/domain/model"
 )
 
@@ -56,18 +58,19 @@ func (r *ProductRepository) GetProductByName(ctx context.Context, productName st
 	return r.queryConcreteProduct(ctx, query, productName)
 }
 
-func (r *ProductRepository) AddProduct(ctx context.Context, productInfo *model.Product) error {
-	query := `INSERT INTO product (id, name, description, price) VALUES (?, ?, ?, ?)`
-	_, err := r.db.ExecContext(ctx, query, productInfo.ID, productInfo.Name, productInfo.Description, productInfo.Price)
+func (r *ProductRepository) AddProduct(ctx context.Context, productInfo *model.Product) (string, error) {
+	query := `INSERT INTO product (name, description, price) VALUES (?, ?, ?)`
+	res, err := r.db.ExecContext(ctx, query, productInfo.Name, productInfo.Description, productInfo.Price)
 	if err != nil {
-		return err
+		return "", err
 	}
-	return nil
+	id, err := res.LastInsertId()
+	return strconv.FormatInt(id, 10), nil
 }
 
 func (r *ProductRepository) AddProductImage(ctx context.Context, productImageInfo *model.Image) error {
-	query := `INSERT INTO product_image (id, product_id, image_path) VALUES (?, ?, ?)`
-	_, err := r.db.ExecContext(ctx, query, productImageInfo.ID, productImageInfo.ProductID, productImageInfo.ImagePath)
+	query := `INSERT INTO product_image (product_id, image_path) VALUES (?, ?)`
+	_, err := r.db.ExecContext(ctx, query, productImageInfo.ProductID, productImageInfo.ImagePath)
 	if err != nil {
 		return err
 	}
