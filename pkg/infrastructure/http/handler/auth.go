@@ -25,7 +25,7 @@ func (h *AuthHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if req.Email == "" || req.Password == "" || req.Name == "" {
+	if req.Email == "" || req.Password == "" || req.Name == "" || req.Surname == "" {
 		http.Error(w, "Email, password and name are required", http.StatusBadRequest)
 		return
 	}

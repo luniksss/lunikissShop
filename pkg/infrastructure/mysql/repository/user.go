@@ -20,7 +20,8 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 func (ur UserRepository) ListAllUsers(ctx context.Context) ([]model.User, error) {
 	query := `
         SELECT 
-            id, name, surname, email, role, phone
+            id, name, surname, email, role, COALESCE(phone, '') as phone, 
+            COALESCE(default_outlet_id, '') as default_outlet_id
         FROM user
         ORDER BY id
     `
@@ -34,9 +35,7 @@ func (ur UserRepository) ListAllUsers(ctx context.Context) ([]model.User, error)
 	var users []model.User
 	for rows.Next() {
 		var us model.User
-		err := rows.Scan(
-			&us.ID, &us.Name, &us.Surname, &us.Email, &us.Role, &us.Phone,
-		)
+		err := rows.Scan(&us.ID, &us.Name, &us.Surname, &us.Email, &us.Role, &us.Phone, &us.DefaultOutletID)
 		if err != nil {
 			return nil, err
 		}
@@ -49,7 +48,8 @@ func (ur UserRepository) ListAllUsers(ctx context.Context) ([]model.User, error)
 func (ur UserRepository) GetUserByID(ctx context.Context, userID string) (model.User, error) {
 	query := `
         SELECT 
-            id, name, surname, email, role, phone
+            id, name, surname, email, role, COALESCE(phone, '') as phone, 
+            COALESCE(default_outlet_id, '') as default_outlet_id
         FROM user
         WHERE id=?
     `
@@ -61,7 +61,7 @@ func (ur UserRepository) GetUserByID(ctx context.Context, userID string) (model.
 
 	var oi model.User
 	for rows.Next() {
-		err := rows.Scan(&oi.ID, &oi.Name, &oi.Surname, &oi.Email, &oi.Role, &oi.Phone)
+		err := rows.Scan(&oi.ID, &oi.Name, &oi.Surname, &oi.Email, &oi.Role, &oi.Phone, &oi.DefaultOutletID)
 		if err != nil {
 			return model.User{}, err
 		}
@@ -119,10 +119,10 @@ func (ur UserRepository) AddUser(ctx context.Context, userInfo *model.UserInfo) 
 
 func (ur UserRepository) UpdateUser(ctx context.Context, newUserInfo *model.UserInfo) error {
 	query := `UPDATE user 
-		SET name = ?, surname = ?, email = ?, role = ?, phone = ?
+		SET name = ?, surname = ?, email = ?, role = ?, phone = ?, default_outlet_id = ?
 		WHERE id = ?
 	`
-	_, err := ur.db.ExecContext(ctx, query, newUserInfo.Name, newUserInfo.Surname, newUserInfo.Email, newUserInfo.Role, newUserInfo.Phone, newUserInfo.ID)
+	_, err := ur.db.ExecContext(ctx, query, newUserInfo.Name, newUserInfo.Surname, newUserInfo.Email, newUserInfo.Role, newUserInfo.Phone, newUserInfo.DefaultOutletID, newUserInfo.ID)
 	if err != nil {
 		return err
 	}

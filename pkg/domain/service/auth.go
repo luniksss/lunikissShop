@@ -42,8 +42,10 @@ func (as *AuthService) Register(ctx context.Context, req *model.RegisterRequest)
 	userInfo := &model.UserInfo{
 		Email:    req.Email,
 		Name:     req.Name,
+		Surname:  req.Surname,
 		Password: hashedPassword,
 		Role:     string(model.RoleUser),
+		Phone:    req.Phone,
 	}
 
 	if err := as.userService.AddUser(ctx, userInfo); err != nil {
