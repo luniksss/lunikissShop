@@ -11,7 +11,6 @@ const OrderList: React.FC = () => {
   const [ordersLoading, setOrdersLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
-  const [selectedOrderStatus, setSelectedOrderStatus] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
@@ -77,16 +76,14 @@ const OrderList: React.FC = () => {
     fetchOrders();
   };
 
-  const handleOrderClick = (orderId: string, orderStatus: string) => {
+  const handleOrderClick = (orderId: string) => {
     setSelectedOrderId(orderId);
-    setSelectedOrderStatus(orderStatus);
     setIsModalOpen(true);
   };
 
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedOrderId(null);
-    setSelectedOrderStatus(null);
   };
 
   const loading = ordersLoading || outletsLoading;
@@ -211,7 +208,7 @@ const OrderList: React.FC = () => {
 
                 <div className={styles.orderFooter}>
                   <button 
-                    onClick={() => handleOrderClick(order.id, order.status_name)}
+                    onClick={() => handleOrderClick(order.id)}
                     className={styles.detailsButton}
                   >
                     Подробнее
@@ -227,7 +224,7 @@ const OrderList: React.FC = () => {
                         {deleting === order.id ? (
                           <span className={styles.deleteButtonText}>Удаление...</span>
                         ) : (
-                          <img src='/icons/delete.png' alt="Удалить"/>
+                          <img src='/icons/delete.png'/>
                         )}
                       </button>
                     )}
@@ -243,7 +240,6 @@ const OrderList: React.FC = () => {
           isOpen={isModalOpen}
           onClose={closeModal}
           orderId={selectedOrderId}
-          orderStatus={selectedOrderStatus}
           onOrderItemDeleted={handleOrderItemDeleted}
           refreshOrders={fetchOrders}
         />

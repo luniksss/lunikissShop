@@ -9,17 +9,9 @@ interface OrderModalProps {
   orderId: string;
   onOrderItemDeleted?: (deletedItemId: string) => void;
   refreshOrders?: () => void;
-  orderStatus: string | null;
 }
 
-const OrderModal: React.FC<OrderModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  orderId, 
-  onOrderItemDeleted, 
-  refreshOrders,
-  orderStatus
-}) => {
+const OrderModal: React.FC<OrderModalProps> = ({ isOpen, onClose, orderId, onOrderItemDeleted, refreshOrders }) => {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,14 +102,6 @@ const OrderModal: React.FC<OrderModalProps> = ({
     }
   };
 
-  const canDeleteItems = (): boolean => {
-    if (orderStatus) {
-      return orderStatus.toLowerCase() === 'ordered';
-    }
-    
-    return false;
-  };
-
   if (orderDeleted && !isOpen) {
     return null;
   }
@@ -180,9 +164,7 @@ const OrderModal: React.FC<OrderModalProps> = ({
                   <div className={styles.tableCell}>Количество</div>
                   <div className={styles.tableCell}>Цена</div>
                   <div className={styles.tableCell}>Сумма</div>
-                  {canDeleteItems() && (
-                    <div className={styles.tableCell}></div>
-                  )}
+                  <div className={styles.tableCell}></div>
                 </div>
                 
                 {items.map((item) => (
@@ -207,18 +189,16 @@ const OrderModal: React.FC<OrderModalProps> = ({
                     <div className={styles.tableCell}>{item.amount}</div>
                     <div className={styles.tableCell}>{item.price} ₽</div>
                     <div className={styles.tableCell}>{item.price * item.amount} ₽</div>
-                    {canDeleteItems() && (
-                      <div className={styles.tableCell}>
-                        <button 
-                          onClick={() => handleDeleteItem(item.id, item.product_name || `Товар #${item.product_id}`)}
-                          disabled={deletingItem === item.id}
-                          className={deletingItem === item.id ? styles.deleteItemButtonDisabled : styles.deleteItemButton}
-                          title="Удалить товар из брони"
-                        >
-                          {deletingItem === item.id ? '...' : <img src='/icons/delete.png' alt="Удалить"/>}
-                        </button>
-                      </div>
-                    )}
+                    <div className={styles.tableCell}>
+                      <button 
+                        onClick={() => handleDeleteItem(item.id, item.product_name || `Товар #${item.product_id}`)}
+                        disabled={deletingItem === item.id}
+                        className={deletingItem === item.id ? styles.deleteItemButtonDisabled : styles.deleteItemButton}
+                        title="Удалить товар из брони"
+                      >
+                        {deletingItem === item.id ? '...' : <img src='/icons/delete.png'/>}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
