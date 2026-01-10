@@ -158,7 +158,7 @@ const ProductModal: React.FC<ProductModalProps> = ({
                     ? 'Нет в наличии' 
                     : product.sizes.length > 0 && !selectedSize
                       ? 'Выберите размер'
-                      : `Забронировать${selectedSize ? ` (размер ${selectedSize})` : ''}`
+                      : 'Забронировать'
                 }
               </button>
               

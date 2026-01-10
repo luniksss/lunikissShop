@@ -279,6 +279,35 @@
     font-size: 16px;
 }
 
+.filterPanel {
+    margin-bottom: 24px;
+}
+
+.searchWrapper {
+    flex: 1;
+    min-width: 300px;
+}
+
+.roleFilterWrapper {
+    min-width: 200px;
+}
+
+.clearFiltersButton {
+    padding: 8px 16px;
+    background-color: #e24c4a;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 12px;
+    transition: background-color 0.3s;
+}
+
+.clearFiltersButton:hover {
+    background-color: #c8563a;
+}
+
 @media (max-width: 768px) {
     .container {
         padding: 15px;
@@ -325,5 +354,10 @@
         min-width: 80px;
         font-size: 11px;
         padding: 3px 6px;
+    }
+
+    .searchWrapper,
+    .roleFilterWrapper {
+        min-width: 100%;
     }
 }

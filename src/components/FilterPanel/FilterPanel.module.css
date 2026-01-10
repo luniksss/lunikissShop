@@ -1,0 +1,59 @@
+.filterPanel {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 20px;
+  background-color: #f8fafc;
+  border-radius: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  border: 1px solid #e2e8f0;
+}
+
+.filterControls {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.clearButton {
+  padding: 10px 20px;
+  background-color: #718096;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Rubik';
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.clearButton:hover {
+  background-color: #4a5568;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.clearButton:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .filterPanel {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .filterControls {
+    flex-direction: column;
+  }
+  
+  .clearButton {
+    width: 100%;
+  }
+}

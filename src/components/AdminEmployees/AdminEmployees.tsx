@@ -1,7 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import api from '../../api/api';
 import { User } from '../../types';
-import styles from './AdminEmployees.module.css'
+import SearchBar from '../SearchBar/SearchBar';
+import RoleFilter from '../RoleFilter/RoleFilter';
+import FilterPanel from '../FilterPanel/FilterPanel';
+import styles from './AdminEmployees.module.css';
 
 const AdminEmployees: React.FC = () => {
   const [employees, setEmployees] = useState<User[]>([]);
@@ -10,6 +13,9 @@ const AdminEmployees: React.FC = () => {
   const [roleChanging, setRoleChanging] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deleteError, setDeleteError] = useState<string | null>(null);
+  
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [roleFilter, setRoleFilter] = useState<string>('all');
 
   useEffect(() => {
     fetchAllEmployees();
@@ -46,6 +52,32 @@ const AdminEmployees: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const roleFilterOptions = [
+    { value: 'all', label: 'Все роли' },
+    { value: 'admin', label: 'Администратор' },
+    { value: 'seller', label: 'Продавец' },
+    { value: 'user', label: 'Пользователь' },
+  ];
+
+  const filteredEmployees = useMemo(() => {
+    if (!Array.isArray(employees)) return [];
+    
+    return employees.filter(employee => {
+      const matchesSearch = searchTerm.trim() === '' || 
+        (employee.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         employee.surname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+         `${employee.name || ''} ${employee.surname || ''}`
+           .toLowerCase()
+           .includes(searchTerm.toLowerCase()) ||
+         employee.email?.toLowerCase().includes(searchTerm.toLowerCase()));
+      
+      const matchesRole = roleFilter === 'all' || 
+        employee.role?.toLowerCase() === roleFilter.toLowerCase();
+      
+      return matchesSearch && matchesRole;
+    });
+  }, [employees, searchTerm, roleFilter]);
 
   const handleRoleChange = async (userId: string, newRole: string) => {
     try {
@@ -90,6 +122,12 @@ const AdminEmployees: React.FC = () => {
       setDeleting(null);
     }
   };
+
+  const clearFilters = () => {
+    setSearchTerm('');
+    setRoleFilter('all');
+  };
+  const hasActiveFilters = searchTerm.trim() !== '' || roleFilter !== 'all';
 
   const getRoleOptions = () => {
     return [
@@ -156,14 +194,17 @@ const AdminEmployees: React.FC = () => {
     );
   }
 
-  const displayEmployees = Array.isArray(employees) ? employees : [];
-
   return (
     <div className={styles.container}>
       <header className={styles.header}>
         <div>
           <h2 className={styles.title}>Управление сотрудниками</h2>
-          <p className={styles.subtitle}>Всего пользователей: {displayEmployees.length}</p>
+          <p className={styles.subtitle}>
+            Всего пользователей: {employees.length} 
+            {filteredEmployees.length !== employees.length && 
+              ` (Найдено: ${filteredEmployees.length})`
+            }
+          </p>
         </div>
         <div className={styles.headerButtons}>
           <button onClick={fetchAllEmployees} className={styles.refreshButton}>
@@ -171,6 +212,27 @@ const AdminEmployees: React.FC = () => {
           </button>
         </div>
       </header>
+
+      <FilterPanel
+        showClearButton={hasActiveFilters}
+        onClear={clearFilters}
+        className={styles.filterPanel}
+      >
+        <div className={styles.searchWrapper}>
+          <SearchBar
+            value={searchTerm}
+            onChange={setSearchTerm}
+            placeholder="Поиск по имени, фамилии или email..."
+          />
+        </div>
+        <div className={styles.roleFilterWrapper}>
+          <RoleFilter
+            value={roleFilter}
+            onChange={setRoleFilter}
+            options={roleFilterOptions}
+          />
+        </div>
+      </FilterPanel>
 
       {deleteError && (
         <div className={styles.deleteError}>
@@ -185,9 +247,23 @@ const AdminEmployees: React.FC = () => {
       )}
 
       <div className={styles.tableContainer}>
-        {displayEmployees.length === 0 ? (
+        {filteredEmployees.length === 0 ? (
           <div className={styles.emptyState}>
-            <p>Пользователи не найдены</p>
+            {employees.length === 0 ? (
+              <p>Пользователи не найдены</p>
+            ) : (
+              <div>
+                <p>Пользователи по вашему запросу не найдены</p>
+                {hasActiveFilters && (
+                  <button 
+                    onClick={clearFilters}
+                    className={styles.clearFiltersButton}
+                  >
+                    Сбросить фильтры
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <table className={styles.table}>
@@ -203,7 +279,7 @@ const AdminEmployees: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {displayEmployees.map((employee) => {
+              {filteredEmployees.map((employee) => {
                 const isCurrentUser = getCurrentUser()?.id === employee.id;
                 
                 return (
@@ -246,7 +322,7 @@ const AdminEmployees: React.FC = () => {
                             className={deleting === employee.id ? styles.deleteButtonDisabled : styles.deleteButton}
                             title="Удалить пользователя"
                           >
-                            {deleting === employee.id ? 'Удаление...' : <img src='/icons/delete.png' />}
+                            {deleting === employee.id ? 'Удаление...' : <img src='/icons/delete.png' alt="Удалить" />}
                           </button>
                         )}
                         
